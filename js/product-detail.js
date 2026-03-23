@@ -1,10 +1,29 @@
 (function () {
+	function bindImageFallback(container) {
+		if (!container) return;
+		// Event delegation so it works even after innerHTML re-renders.
+		container.addEventListener('error', function (e) {
+			var img = e.target;
+			if (!img || !img.tagName || img.tagName.toUpperCase() !== 'IMG') return;
+
+			var fallback = document.createElement('div');
+			fallback.style.padding = '2rem';
+			fallback.style.textAlign = 'center';
+			fallback.style.color = '#999';
+			fallback.textContent = '圖片載入失敗';
+
+			img.replaceWith(fallback);
+		}, true);
+	}
+
 	function getProductId() {
 		var params = new URLSearchParams(window.location.search);
 		return params.get('id') || '';
 	}
 
 	function init() {
+		bindImageFallback(document.getElementById('product-detail'));
+
 		var id = getProductId();
 		if (!id) {
 			document.getElementById('product-detail').innerHTML = '<p class="catalog-empty">未指定產品，請從 <a href="index.html#catalog" class="nav-link">產品目錄</a> 選擇。</p>';

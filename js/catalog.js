@@ -6,7 +6,29 @@
 	var ITEMS_PER_PAGE = 10;
 	var PAGE_GROUP_SIZE = 10;
 
+	function bindImageFallback(container) {
+		if (!container) return;
+		// Event delegation: even if grid re-renders, the handler stays.
+		container.addEventListener('error', function (e) {
+			var img = e.target;
+			if (!img || !img.tagName || img.tagName.toUpperCase() !== 'IMG') return;
+
+			var fallback = document.createElement('div');
+			fallback.textContent = '圖片載入失敗';
+			fallback.style.height = '160px';
+			fallback.style.display = 'flex';
+			fallback.style.alignItems = 'center';
+			fallback.style.justifyContent = 'center';
+			fallback.style.color = '#999';
+
+			img.replaceWith(fallback);
+		}, true);
+	}
+
 	function init() {
+		var grid = document.getElementById('catalog-grid');
+		bindImageFallback(grid);
+
 		fetch('data/products.json')
 			.then(function (res) { return res.json(); })
 			.then(function (data) {
